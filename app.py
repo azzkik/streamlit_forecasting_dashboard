@@ -229,7 +229,7 @@ def create_forecast_chart(df_result):
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>📱 Telkomsel Sales Forecasting</h1>
+    <h1>Telkomsel Sales Forecasting</h1>
     <p>Dashboard Prediksi Penjualan Menggunakan Machine Learning</p>
 </div>
 """, unsafe_allow_html=True)
@@ -450,6 +450,6 @@ if uploaded_file:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem;">
-    <p>🚀 Telkomsel Sales Forecasting Dashboard | By Azkiya Akmal</p>
+    <p>Telkomsel Sales Forecasting Dashboard | By Azkiya Akmal</p>
 </div>
 """, unsafe_allow_html=True)
