@@ -90,14 +90,13 @@ st.markdown("""
     
     /* Upload area */
     .upload-section {
-        background: #f8f9fa;
+        background: ##0e1117;
         padding: 2rem;
         border-radius: 10px;
-        border: 2px dashed #dee2e6;
         text-align: center;
         margin: 1rem 0;
     }
-    
+            
     /* Sidebar styling */
     .sidebar .sidebar-content {
         background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
@@ -272,11 +271,7 @@ with col2:
 if uploaded_file is None:
     st.markdown("""
     <div class="upload-section">
-        <h3>🎯 Cara Menggunakan Dashboard</h3>
-        <p>1. Upload file CSV dengan data historis penjualan</p>
-        <p>2. Pastikan file memiliki kolom 'tanggal' dan 'penjualan'</p>
-        <p>3. Sistem akan otomatis memprediksi penjualan 10 hari ke depan</p>
-        <p>4. Lihat hasil prediksi dalam bentuk tabel dan grafik interaktif</p>
+        <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=500&color=29C9F7&width=600&height=100&lines=Upload+file+CSV+dengan+data+historis+penjualan;Pastikan+file+memiliki+kolom+tanggal+dan+penjualan;Sistem+akan+otomatis+memprediksi+penjualan;Lihat+hasil+prediksi+dalam+bentuk+tabel+dan+grafik+interaktif" alt="Typing SVG" /></a>
     </div>
     """, unsafe_allow_html=True)
     
@@ -455,6 +450,6 @@ if uploaded_file:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem;">
-    <p>🚀 Telkomsel Sales Forecasting Dashboard | Powered by Streamlit & Machine Learning</p>
+    <p>🚀 Telkomsel Sales Forecasting Dashboard | By Azkiya Akmal</p>
 </div>
 """, unsafe_allow_html=True)
