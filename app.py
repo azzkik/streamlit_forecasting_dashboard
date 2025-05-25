@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+# import plotly.express as px
+# import plotly.graph_objects as go
+# from plotly.subplots import make_subplots
 import joblib
 from pytanggalmerah import TanggalMerah
 
@@ -121,10 +121,27 @@ st.markdown("""
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     
-    /* Hide streamlit menu */
+    # Hide streamlit style
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* Remove upload button default styling */
+    .uploadedFile {border: none !important;}
+    
+    /* Custom file uploader */
+    .stFileUploader > div {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .stFileUploader label {
+        font-weight: 600 !important;
+        color: #333 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -162,55 +179,49 @@ def calculate_metrics(df):
     return avg_sales, max_sales, min_sales, total_days
 
 def create_forecast_chart(df_result):
-    """Membuat chart interaktif untuk prediksi"""
-    fig = go.Figure()
+    """Membuat chart untuk prediksi menggunakan matplotlib"""
+    import matplotlib.dates as mdates
+    
+    fig, ax = plt.subplots(figsize=(14, 8))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
     
     # Data aktual
     actual_data = df_result[df_result['tipe'] == 'Aktual']
-    fig.add_trace(go.Scatter(
-        x=actual_data['tanggal'],
-        y=actual_data['penjualan'],
-        mode='lines+markers',
-        name='Data Aktual',
-        line=dict(color='#667eea', width=3),
-        marker=dict(size=6)
-    ))
+    ax.plot(actual_data['tanggal'], actual_data['penjualan'], 
+            color='#667eea', linewidth=3, marker='o', markersize=6,
+            label='Data Aktual', alpha=0.8)
     
     # Data prediksi
     prediction_data = df_result[df_result['tipe'] == 'Prediksi']
-    fig.add_trace(go.Scatter(
-        x=prediction_data['tanggal'],
-        y=prediction_data['penjualan'],
-        mode='lines+markers',
-        name='Prediksi',
-        line=dict(color='#764ba2', width=3, dash='dash'),
-        marker=dict(size=6, symbol='diamond')
-    ))
+    ax.plot(prediction_data['tanggal'], prediction_data['penjualan'], 
+            color='#764ba2', linewidth=3, linestyle='--', marker='D', markersize=6,
+            label='Prediksi', alpha=0.8)
     
-    fig.update_layout(
-        title=dict(
-            text="Prediksi Penjualan Telkomsel - 10 Hari ke Depan",
-            x=0.5,
-            font=dict(size=20, color='#333')
-        ),
-        xaxis_title="Tanggal",
-        yaxis_title="Penjualan (Unit)",
-        hovermode='x unified',
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(family="Arial, sans-serif"),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        ),
-        height=500
-    )
+    # Styling
+    ax.set_title('Prediksi Penjualan Telkomsel - 10 Hari ke Depan', 
+                fontsize=18, fontweight='bold', color='#333', pad=20)
+    ax.set_xlabel('Tanggal', fontsize=14, fontweight='600')
+    ax.set_ylabel('Penjualan (Unit)', fontsize=14, fontweight='600')
     
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
-    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='#f0f0f0')
+    # Grid
+    ax.grid(True, alpha=0.3, color='#f0f0f0')
+    ax.set_axisbelow(True)
+    
+    # Legend
+    ax.legend(loc='upper left', frameon=True, fancybox=True, shadow=True,
+             fontsize=12, framealpha=0.9)
+    
+    # Format tanggal pada x-axis
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=max(1, len(df_result)//10)))
+    plt.xticks(rotation=45, ha='right')
+    
+    # Format angka pada y-axis
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:,.0f}'))
+    
+    # Tight layout
+    plt.tight_layout()
     
     return fig
 
@@ -246,11 +257,17 @@ with st.sidebar:
 # Upload section
 st.markdown("### 📁 Upload Data Penjualan")
 
-uploaded_file = st.file_uploader(
-    "",
-    type=["csv"],
-    help="Upload file CSV dengan kolom 'tanggal' dan 'penjualan'"
-)
+col1, col2 = st.columns([3, 1])
+with col1:
+    uploaded_file = st.file_uploader(
+        "Pilih file CSV",
+        type=["csv"],
+        help="Upload file CSV dengan kolom 'tanggal' dan 'penjualan'",
+        label_visibility="collapsed"
+    )
+with col2:
+    if st.button("🔄 Reset", help="Reset aplikasi"):
+        st.rerun()
 
 if uploaded_file is None:
     st.markdown("""
@@ -358,7 +375,7 @@ if uploaded_file:
                 
                 with tab1:
                     fig = create_forecast_chart(df_result)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.pyplot(fig, use_container_width=True)
                 
                 with tab2:
                     col1, col2 = st.columns(2)
