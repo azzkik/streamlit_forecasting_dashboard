@@ -73,30 +73,57 @@ st.markdown("""
     
     /* Success/Error messages */
     .success-box {
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #28a745;
+        background: linear-gradient(135deg, #d1edff 0%, #a8e6cf 100%);
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 5px solid #28a745;
         margin: 1rem 0;
+        color: #155724 !important;
+        font-weight: 500;
+    }
+    
+    .success-box strong {
+        color: #0f5132 !important;
     }
     
     .error-box {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #dc3545;
+        background: linear-gradient(135deg, #ffe8e6 0%, #ffcccb 100%);
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 5px solid #dc3545;
         margin: 1rem 0;
+        color: #721c24 !important;
+        font-weight: 500;
+    }
+    
+    .error-box strong {
+        color: #58151c !important;
     }
     
     /* Upload area */
     .upload-section {
-        background: ##0e1117;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         padding: 2rem;
-        border-radius: 10px;
+        border-radius: 15px;
+        border: 2px dashed #6c757d;
         text-align: center;
         margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-            
+    
+    .upload-section h3 {
+        color: #495057 !important;
+        margin-bottom: 1.5rem !important;
+        font-weight: 700 !important;
+    }
+    
+    .upload-section p {
+        color: #6c757d !important;
+        font-size: 1.1rem !important;
+        margin: 0.8rem 0 !important;
+        font-weight: 500 !important;
+    }
+    
     /* Sidebar styling */
     .sidebar .sidebar-content {
         background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
@@ -137,9 +164,33 @@ st.markdown("""
         text-align: center;
     }
     
-    .stFileUploader label {
-        font-weight: 600 !important;
-        color: #333 !important;
+    /* Ensure good contrast for all text */
+    .stMarkdown p {
+        color: #495057 !important;
+    }
+    
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: #343a40 !important;
+    }
+    
+    /* Info boxes */
+    .stAlert > div {
+        color: #495057 !important;
+    }
+    
+    /* Custom info box */
+    .info-box {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 5px solid #2196f3;
+        margin: 1rem 0;
+        color: #0d47a1 !important;
+        font-weight: 500;
+    }
+    
+    .info-box strong {
+        color: #1565c0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -161,8 +212,19 @@ def prepare_data(df, days_forward=10):
 
     # Feature engineering
     df_all['hari_minggu'] = df_all['tanggal'].apply(lambda x: 1 if x.weekday() == 6 else 0)
+    
+    # Manual Indonesian holidays (alternative to pytanggalmerah)
+    indonesian_holidays_2024_2025 = [
+        '2024-01-01', '2024-02-10', '2024-03-11', '2024-03-29', '2024-04-10',
+        '2024-05-01', '2024-05-09', '2024-05-23', '2024-06-01', '2024-06-17',
+        '2024-08-17', '2024-09-16', '2024-12-25',
+        '2025-01-01', '2025-01-29', '2025-03-14', '2025-03-31', '2025-04-18',
+        '2025-05-01', '2025-05-12', '2025-05-29', '2025-06-02', '2025-06-06',
+        '2025-08-17', '2025-09-06', '2025-12-25'
+    ]
+    
     df_all['libur_nasional'] = df_all['tanggal'].apply(
-        lambda x: 1 if TanggalMerah(x.strftime('%Y-%m-%d')).check() else 0
+        lambda x: 1 if x.strftime('%Y-%m-%d') in indonesian_holidays_2024_2025 else 0
     )
 
     return df_all
@@ -229,7 +291,7 @@ def create_forecast_chart(df_result):
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>Telkomsel Sales Forecasting</h1>
+    <h1>📱 Telkomsel Sales Forecasting</h1>
     <p>Dashboard Prediksi Penjualan Menggunakan Machine Learning</p>
 </div>
 """, unsafe_allow_html=True)
@@ -271,12 +333,24 @@ with col2:
 if uploaded_file is None:
     st.markdown("""
     <div class="upload-section">
-        <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=500&color=29C9F7&width=600&height=100&lines=Upload+file+CSV+dengan+data+historis+penjualan;Pastikan+file+memiliki+kolom+tanggal+dan+penjualan;Sistem+akan+otomatis+memprediksi+penjualan;Lihat+hasil+prediksi+dalam+bentuk+tabel+dan+grafik+interaktif" alt="Typing SVG" /></a>
+        <h3>🎯 Cara Menggunakan Dashboard</h3>
+        <p>1. Upload file CSV dengan data historis penjualan</p>
+        <p>2. Pastikan file memiliki kolom 'tanggal' dan 'penjualan'</p>
+        <p>3. Sistem akan otomatis memprediksi penjualan 10 hari ke depan</p>
+        <p>4. Lihat hasil prediksi dalam bentuk tabel dan grafik interaktif</p>
     </div>
     """, unsafe_allow_html=True)
     
     # Demo data info
     st.markdown("### 📊 Contoh Format Data")
+    
+    st.markdown("""
+    <div class="info-box">
+        <strong>💡 Format CSV yang Benar:</strong><br>
+        File harus memiliki struktur seperti contoh di bawah ini dengan kolom 'tanggal' dan 'penjualan'
+    </div>
+    """, unsafe_allow_html=True)
+    
     demo_data = pd.DataFrame({
         'tanggal': ['2024-01-01', '2024-01-02', '2024-01-03'],
         'penjualan': [1250, 1340, 1180]
@@ -450,6 +524,6 @@ if uploaded_file:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem;">
-    <p>Telkomsel Sales Forecasting Dashboard | By Azkiya Akmal</p>
+    <p>🚀 Telkomsel Sales Forecasting Dashboard | Powered by Streamlit & Machine Learning</p>
 </div>
 """, unsafe_allow_html=True)
